@@ -1,17 +1,21 @@
 set.seed(786)
 DF<-read.csv('input.csv',sep=';')
-print('Found columns:')
+DF$list..<-NULL
+head(DF)
 print(colnames(DF))
-#DF$Age
-#DF$Age<-as.integer(as.factor(DF$Age))
-#DF$Age<-scale(DF$Age)
+head(summary(DF$favourite),n=10)
+### Visualizations to describe variables to answer the following :
+DF$favourite<-tolower(trimws(DF$favourite))# trims whitespace, lowers case
+head(summary(DF$favourite),n=4)
+plot(head(summary(DF$favourite),n=4))
+plot(sort(table(trimws(DF$favourite)),decreasing=TRUE)[2:25])#plots after doing all other stuff
+superheroes=c("Joker","Batman","Avenger","Captain")
+superherofans=NULL
+for (hero in superheroes){
+superherofans<-append(superherofans,subset(DF, grepl(hero,favourite)))
+}
+superherofans
 
-#for (col in colnames(DF)){
-#print('Doing')
-#print(col)
-#DF[col]<-as.integer(as.factor(DF[col]))
-#DF[col]<-scale(DF[col])
-#}
 
 for (col in 1:ncol(DF)){
 #print('Doing')

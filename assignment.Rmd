@@ -35,7 +35,6 @@ Now it's time to load up R from any console and get to the R shell. The csv file
 
 ```{r} 
 DF<-read.csv('input.csv',sep=';')
-DF$list..<-NULL
 head(DF)
 ```
 
@@ -45,6 +44,15 @@ The data from the file is now in the variable `DF` and the column names can be s
 ```{r} 
 print(colnames(DF))
 ```
+
+Data needs some cleaning up
+
+```{r}
+DF$list..<-NULL
+DF<-DF[40:189,]
+DF$favourite<-tolower(trimws(DF$favourite))
+```
+
 
 ### Perform MBA Using R and share most watched
 
@@ -57,8 +65,12 @@ head(summary(DF$favourite),n=10)
  * Find top 3 movies?
 ```{r}
 head(summary(DF$favourite),n=4)
+#plot(head(summary(DF$favourite),n=4))
 ```
 Ignoring the first entry as it contains empty spaces in the survey dataset
+```{r}
+plot(sort(table(trimws(DF$favourite)),decreasing=TRUE)[2:25])#plots after doing all other stuff
+```
 
  * Which age range likes superhero movies?
 ```{r}
@@ -67,56 +79,42 @@ superherofans=NULL
 for (hero in superheroes){
 superherofans<-append(superherofans,subset(DF, grepl(hero,favourite)))
 }
-superherofans
+#superherofans
 ```
 We have seperated all superhero fans in a seperate list now
 
+### Using Hierarchial Clustering to find which gender / age group likes which of the top favourite movies?
 
-
-```{r}
-#DF$Age
-#DF$Age<-as.integer(as.factor(DF$Age))
-#DF$Age<-scale(DF$Age)
-
-#for (col in colnames(DF)){
-#print('Doing')
-#print(col)
-#DF[col]<-as.integer(as.factor(DF[col]))
-#DF[col]<-scale(DF[col])
-#}
-```
 ```{r} 
 for (col in 1:ncol(DF)){
-#print('Doing')
-#print(col)
 DF[,col]<-as.integer(as.factor(DF[,col]))
 DF[,col]<-scale(DF[,col])
 }
-#str(DF)
+```
+
+```{r}
 dist_matrix=dist(DF,method='euclidean')
 hclust_avg=hclust(dist_matrix,method='average')
 plot(hclust_avg)
 ```
+
+Now time to cut the tree on 3rd level
+```{r}
+
 ```{r} 
-#cut_avg=cutree(hclust_avg,k=3)
-#rect.hclust(hclust_avg,k=3,border=2:6)
-#abline(h=3,col='red')
+for (col in 1:ncol(DF)){
+DF[,col]<-as.integer(as.factor(DF[,col]))
+DF[,col]<-scale(DF[,col])
+}
+dist_matrix=dist(DF,method='euclidean')
+hclust_avg=hclust(dist_matrix,method='average')
+plot(hclust_avg)
+#plot.new()
+cut_avg=cutree(hclust_avg,k=3)
+abline(h=3,col='red')
+avg_dend_obj=as.dendrogram(hclust_avg)
+suppressPackageStartupMessages(library(dendextend))
+avg_col_dend=color_branches(avg_dend_obj,h=3)
+plot(avg_col_dend)
+rect.hclust(hclust_avg,k=3,border=2:6)
 ```
-```{r} 
-#avg_dend_obj=as.dendrogram(hclust_avg)
-#suppressPackageStartupMessages(library(dendextend))
-#avg_col_dend=color_branches(avg_dend_obj,h=3)
-#plot(avg_col_dend)
-
-
-
-
-```
-
-
-
-
-
-
-
-
